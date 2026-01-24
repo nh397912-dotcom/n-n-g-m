@@ -1,12 +1,9 @@
 
 import React, { useState, useMemo, Suspense, useRef, useEffect } from 'react';
-import { Canvas, ThreeElements } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows, Environment, Center, Html, Float } from '@react-three/drei';
 import * as THREE from 'three';
 import { generatePotteryImage } from '../services/geminiService';
-
-// Standard HTML elements like div, span, h2 etc. are already defined by React types.
-// Redefining JSX.IntrinsicElements globally can shadow these standard types and causes project-wide errors.
 
 // Danh sách biên dạng với độ chi tiết cao và đường cong mềm mại
 const SHAPES = [
@@ -107,7 +104,7 @@ const PotteryModel = ({ shape, glaze }: { shape: any, glaze: any }) => {
   }, [shape]);
 
   return (
-    // @ts-ignore - Supress intrinsic element errors for React Three Fiber tags
+    // @ts-ignore
     <mesh ref={meshRef} castShadow receiveShadow>
       {/* @ts-ignore */}
       <latheGeometry args={[points, 256]} />
@@ -155,22 +152,23 @@ const PotteryStudio: React.FC = () => {
     <div className="flex flex-col lg:flex-row gap-8 items-stretch max-w-7xl mx-auto px-4 md:px-0">
       
       {/* 3D Visualizer Canvas */}
-      <div className="lg:w-2/3 bg-white rounded-[3rem] relative overflow-hidden flex flex-col items-center justify-center min-h-[500px] md:min-h-[750px] shadow-2xl border border-zinc-100">
+      <div className="lg:w-2/3 bg-white rounded-[3rem] relative overflow-hidden flex flex-col min-h-[500px] md:min-h-[750px] shadow-2xl border border-zinc-100">
         
-        <div className="absolute top-8 left-8 z-10 flex flex-col gap-3">
-          <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full border border-zinc-200 flex items-center gap-3 shadow-sm">
-            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
-            <span className="text-[11px] font-black text-zinc-600 uppercase tracking-[0.2em]">Mỹ Thiện High-Fidelity</span>
+        {/* Header labels moved to top-center to avoid obscuring the model */}
+        <div className="absolute top-6 left-0 right-0 z-10 flex flex-col items-center gap-2 px-8 pointer-events-none">
+          <div className="bg-white/80 backdrop-blur-md px-6 py-2.5 rounded-full border border-zinc-200 flex items-center gap-3 shadow-sm pointer-events-auto">
+            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Mỹ Thiện High-Fidelity</span>
           </div>
-          <div className="bg-zinc-900/5 backdrop-blur-sm px-4 py-2 rounded-xl text-zinc-500 text-[10px] font-mono uppercase tracking-widest">
-            {['batgom', 'thap', 'namruou'].includes(selectedShape.id) ? 'Hollow-Core Realistic Model' : '256 Segments • Double-Sided'}
+          <div className="bg-zinc-900/5 backdrop-blur-[2px] px-4 py-1.5 rounded-full text-zinc-400 text-[9px] font-mono uppercase tracking-widest pointer-events-auto">
+            {['batgom', 'thap', 'namruou'].includes(selectedShape.id) ? 'Hollow-Core Realistic Model' : '256 Segments • High Definition'}
           </div>
         </div>
 
         <div className="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing">
           <Canvas 
             shadows 
-            camera={{ position: [0, 4, 12], fov: 30, near: 0.1, far: 1000 }}
+            camera={{ position: [0, 5, 16], fov: 30, near: 0.1, far: 1000 }}
             gl={{ antialias: true, alpha: true, logarithmicDepthBuffer: true }}
           >
             <Suspense fallback={<Html center><div className="text-zinc-400 animate-pulse font-serif italic text-lg">Đang chuốt gốm mượt mà...</div></Html>}>
@@ -202,8 +200,8 @@ const PotteryStudio: React.FC = () => {
               
               <OrbitControls 
                 enablePan={false} 
-                minDistance={6} 
-                maxDistance={20} 
+                minDistance={8} 
+                maxDistance={25} 
                 makeDefault 
                 autoRotate={!isFiring && !aiResult}
                 autoRotateSpeed={0.4}
