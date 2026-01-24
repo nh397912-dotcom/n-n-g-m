@@ -5,53 +5,78 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Làng Gốm Mỹ Thiện - Di sản Quảng Ngãi</title>
+    <title>Xưởng Gốm Mỹ Thiện - Sáng Tạo Di Sản 3D</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-            serif: ['Playfair Display', 'ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            serif: ['Playfair Display', 'ui-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           extend: {
             colors: {
               'brand-clay': '#A8763E',
               'brand-terracotta': '#8B4513',
               'brand-glaze': '#F0EAD6',
-              'brand-dark': '#3D352E',
+              'brand-dark': '#18181b',
               'brand-accent': '#5E8B7E',
               'brand-sand': '#E5D3B3',
             },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
+            }
           },
         },
       }
     </script>
     <style>
-      .bg-pottery-texture {
-        background-color: #fdfaf6;
-        background-image: url("https://www.transparenttextures.com/patterns/p6.png");
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
       }
-      .clay-gradient {
-        background: linear-gradient(135deg, #A8763E 0%, #8B4513 100%);
+      .bg-pottery-texture {
+        background-color: #fafafa;
+        background-image: radial-gradient(#e5e7eb 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d4d4d8;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a1a1aa;
+      }
+      canvas {
+        touch-action: none;
       }
     </style>
   <script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom": "https://esm.sh/react-dom@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "three": "https://esm.sh/three@0.173.0",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@9.0.0?deps=three@0.173.0,react@19.2.3,react-dom@19.2.3",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@10.0.0?deps=three@0.173.0,@react-three/fiber@9.0.0,react@19.2.3,react-dom@19.2.3",
     "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
 </head>
-  <body class="bg-pottery-texture text-brand-dark font-sans antialiased">
+  <body class="bg-pottery-texture text-zinc-900 font-sans antialiased overflow-x-hidden">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
