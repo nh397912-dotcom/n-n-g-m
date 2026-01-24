@@ -10,7 +10,8 @@ const PATTERN_ASSETS = {
   lotus: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M256 100c-20 0-40 40-40 80s20 80 40 80 40-40 40-80-20-80-40-80zM180 140c-15 0-30 45-30 90s15 90 30 90 30-45 30-90-15-90-30-90zM332 140c15 0 30 45 30 90s-15 90-30 90-30-45-30-90 15-90 30-90zM120 220c-10 0-20 50-20 100s10 100 20 100 20-50 20-100-10-100-20-100zM392 220c10 0 20 50 20 100s-10 100-20 100-20-50-20-100 10-100 20-100z" fill="{{COLOR}}"/></svg>`,
   phoenix: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M256 50c-20 80-80 100-80 150s40 100 80 100 80-50 80-100-60-70-80-150z" fill="{{COLOR}}"/><path d="M100 256c50 0 80-30 100-80s-20-100-50-100-100 80-50 180zM412 256c-50 0-80-30-100-80s20-100 50-100 100 80 50 180z" fill="{{COLOR}}" opacity="0.8"/></svg>`,
   waves: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M0 256c50-50 100-50 150 0s100 50 150 0 100-50 150 0v256H0V256zM0 156c50-50 100-50 150 0s100 50 150 0 100-50 150 0v100H0V156z" fill="{{COLOR}}" opacity="0.6"/></svg>`,
-  crane: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M256 100l-50 150h100L256 100zM156 300l100 50 100-50-100-20-100 20z" fill="{{COLOR}}"/><circle cx="256" cy="180" r="30" fill="{{COLOR}}" opacity="0.8"/></svg>`
+  bamboo: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M100 512V0h20v512h-20zm150 0V0h20v512h-20zm150 0V0h20v512h-20z" fill="{{COLOR}}" opacity="0.2"/><path d="M100 400l80-40-20-10-60 50zm150-150l80-40-20-10-60 50zm150-100l80-40-20-10-60 50z" fill="{{COLOR}}"/></svg>`,
+  chrysanthemum: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><circle cx="256" cy="256" r="40" fill="{{COLOR}}"/><path d="M256 100c10 50 40 50 50 0s-40-50-50 0zm0 312c10-50 40-50 50 0s-40 50-50 0zM100 256c50 10 50 40 0 50s-50-40 0-50zm312 0c-50 10-50 40 0 50s50-40 0-50z" fill="{{COLOR}}" opacity="0.8"/></svg>`
 };
 
 const SHAPES = [
@@ -40,7 +41,8 @@ const PATTERNS = [
   { id: 'lotus', name: 'Liên Hoa', icon: '🪷', textureBase: PATTERN_ASSETS.lotus, defaultColor: '#ec4899' },
   { id: 'phoenix', name: 'Phượng Hoàng', icon: '🕊️', textureBase: PATTERN_ASSETS.phoenix, defaultColor: '#f59e0b' },
   { id: 'waves', name: 'Sóng Nước', icon: '🌊', textureBase: PATTERN_ASSETS.waves, defaultColor: '#3b82f6' },
-  { id: 'crane', name: 'Hạc Linh', icon: 'Swan', textureBase: PATTERN_ASSETS.crane, defaultColor: '#ef4444' }
+  { id: 'bamboo', name: 'Trúc Quân Tử', icon: '🎋', textureBase: PATTERN_ASSETS.bamboo, defaultColor: '#166534' },
+  { id: 'chrysanthemum', name: 'Cúc Đại Đóa', icon: '🌼', textureBase: PATTERN_ASSETS.chrysanthemum, defaultColor: '#ca8a04' }
 ];
 
 const PATTERN_COLORS = [

@@ -33,7 +33,7 @@ const Chatbot: React.FC = () => {
                 },
                 patternId: {
                     type: Type.STRING,
-                    description: 'ID của họa tiết: none, dragon, lotus, phoenix, waves, crane',
+                    description: 'ID của họa tiết: none, dragon, lotus, phoenix, waves, bamboo, chrysanthemum',
                 },
                 patternColor: {
                     type: Type.STRING,
@@ -60,13 +60,15 @@ const Chatbot: React.FC = () => {
                     Danh mục trong xưởng:
                     - Dáng (Shapes): tyba (Tỳ bà), camlo (Cam lộ), thap (Thạp), namruou (Nậm rượu), giotnuoc (Giọt nước), batgom (Bát sen).
                     - Men (Glazes): ngoc (Men ngọc - xanh nhạt), trangnga (Trắng ngà), vangtram (Vàng tràm), chusa (Chu sa - đỏ đậm), ran (Men rạn cổ), thanhlam (Thanh lam - xanh ngọc bích), tro (Men tro), hophach (Hổ phách - vàng cam), datnung (Đất nung mộc).
-                    - Họa tiết (Patterns): dragon (Rồng), lotus (Sen), phoenix (Phượng), waves (Sóng), crane (Hạc).
+                    - Họa tiết (Patterns): dragon (Rồng), lotus (Sen), phoenix (Phượng), waves (Sóng), bamboo (Trúc), chrysanthemum (Cúc).
                     - Màu họa tiết: Sử dụng các mã màu HEX đẹp (Vàng Kim: #ffd700, Đỏ: #ff0000, Xanh Coban: #0047ab, Trắng: #ffffff, v.v.).
                     
-                    Quy tắc phối đồ:
+                    Quy tắc phối đồ mới:
                     1. Bình Tỳ bà nên đi với men Ngọc hoặc Thanh Lam, họa tiết Rồng hoặc Phượng màu Vàng Kim để thể hiện sự quyền quý.
                     2. Bát sen cổ nên đi với men Trắng Ngà, họa tiết Sen màu Hồng Phấn (#ffc0cb) hoặc Xanh Ngọc (#008080).
-                    3. Đất nung mộc không nên dùng họa tiết màu quá rực rỡ, nên dùng màu Đen hoặc Trắng.
+                    3. Men Vàng Tràm rất hợp với họa tiết Trúc (bamboo) màu Xanh Lá hoặc Đen để tạo vẻ thanh tao.
+                    4. Men Chu Sa hợp với họa tiết Cúc Đại Đóa (chrysanthemum) màu Trắng hoặc Vàng Kim để tạo vẻ ấm áp.
+                    5. Đất nung mộc không nên dùng họa tiết màu quá rực rỡ, nên dùng màu Đen hoặc Trắng.
                     
                     Khi người dùng yêu cầu tư vấn hoặc bạn thấy cần thay đổi, hãy sử dụng công cụ 'updatePotteryConfig' để cập nhật mô hình 3D.`,
                     tools: [{ functionDeclarations: [updatePotteryTool] }],
@@ -74,7 +76,7 @@ const Chatbot: React.FC = () => {
             });
             setChat(newChat);
             setMessages([
-                { role: 'model', text: 'Chào bạn! Tôi là Nghệ nhân AI của Làng gốm Mỹ Thiện. Bạn đang cần tôi tư vấn cách phối màu hay tạo hình cho tác phẩm gốm của mình không?' }
+                { role: 'model', text: 'Chào bạn! Tôi là Nghệ nhân AI của Làng gốm Mỹ Thiện. Tôi vừa cập nhật thêm họa tiết Trúc Quân Tử và Cúc Đại Đóa vào xưởng, bạn có muốn thử phối chúng lên bình gốm không?' }
             ]);
         } catch (error) {
             console.error("Lỗi khởi tạo Chat:", error);
