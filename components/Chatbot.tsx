@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 
 interface Message {
     role: 'user' | 'model';
@@ -16,32 +16,65 @@ const Chatbot: React.FC = () => {
     const [hasApiKey, setHasApiKey] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+    // Cấu hình công cụ cập nhật model gốm cho AI
+    const updatePotteryTool = {
+        name: 'updatePotteryConfig',
+        parameters: {
+            type: Type.OBJECT,
+            description: 'Cập nhật cấu hình của bình gốm 3D để phù hợp với sở thích của người dùng.',
+            properties: {
+                shapeId: {
+                    type: Type.STRING,
+                    description: 'ID của hình dáng bình: tyba, camlo, thap, namruou, giotnuoc, batgom',
+                },
+                glazeId: {
+                    type: Type.STRING,
+                    description: 'ID của màu men: ngoc, trangnga, vangtram, chusa, ran, thanhlam, tro, hophach, datnung',
+                },
+                patternId: {
+                    type: Type.STRING,
+                    description: 'ID của họa tiết: none, dragon, lotus, phoenix, waves, crane',
+                },
+                patternColor: {
+                    type: Type.STRING,
+                    description: 'Mã màu HEX cho họa tiết (ví dụ: #ffd700 cho Vàng Kim)',
+                },
+            },
+        },
+    };
+
     useEffect(() => {
-        // Direct check of environment variable presence
         if (!process.env.API_KEY) {
             setHasApiKey(false);
-            setMessages([
-                { role: 'model', text: 'Chào bạn! Hệ thống đang được bảo trì phần hội thoại, bạn vẫn có thể trải nghiệm các tính năng sáng tạo gốm 3D bên trên nhé.' }
-            ]);
             return;
         }
 
         try {
-            // Initializing GoogleGenAI with the correct named parameter and process.env.API_KEY
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const newChat = ai.chats.create({
                 model: 'gemini-3-flash-preview',
                 config: {
-                    systemInstruction: `Bạn là 'Sứ giả Gốm Mỹ Thiện'. 
-                    Nhiệm vụ: Giới thiệu lịch sử 200 năm của làng gốm Mỹ Thiện tại Quảng Ngãi. 
-                    Phong cách: Thân thiện, am hiểu sâu sắc về kỹ thuật làm gốm (nung lò bầu, tráng men hỏa biến, đắp nổi).
-                    Luôn trả lời bằng tiếng Việt trang trọng nhưng gần gũi. 
-                    Nếu người dùng hỏi về mua hàng, hãy nói rằng đây là website giới thiệu văn hóa và khuyến khích họ đến thăm làng gốm trực tiếp tại thị trấn Châu Ổ.`,
+                    systemInstruction: `Bạn là 'Nghệ nhân AI' của Làng gốm Mỹ Thiện. 
+                    Nhiệm vụ: Tư vấn cho người dùng cách phối dáng, men và họa tiết gốm đẹp, sang trọng và đúng văn hóa Quảng Ngãi.
+                    
+                    Danh mục trong xưởng:
+                    - Dáng (Shapes): tyba (Tỳ bà), camlo (Cam lộ), thap (Thạp), namruou (Nậm rượu), giotnuoc (Giọt nước), batgom (Bát sen).
+                    - Men (Glazes): ngoc (Men ngọc - xanh nhạt), trangnga (Trắng ngà), vangtram (Vàng tràm), chusa (Chu sa - đỏ đậm), ran (Men rạn cổ), thanhlam (Thanh lam - xanh ngọc bích), tro (Men tro), hophach (Hổ phách - vàng cam), datnung (Đất nung mộc).
+                    - Họa tiết (Patterns): dragon (Rồng), lotus (Sen), phoenix (Phượng), waves (Sóng), crane (Hạc).
+                    - Màu họa tiết: Sử dụng các mã màu HEX đẹp (Vàng Kim: #ffd700, Đỏ: #ff0000, Xanh Coban: #0047ab, Trắng: #ffffff, v.v.).
+                    
+                    Quy tắc phối đồ:
+                    1. Bình Tỳ bà nên đi với men Ngọc hoặc Thanh Lam, họa tiết Rồng hoặc Phượng màu Vàng Kim để thể hiện sự quyền quý.
+                    2. Bát sen cổ nên đi với men Trắng Ngà, họa tiết Sen màu Hồng Phấn (#ffc0cb) hoặc Xanh Ngọc (#008080).
+                    3. Đất nung mộc không nên dùng họa tiết màu quá rực rỡ, nên dùng màu Đen hoặc Trắng.
+                    
+                    Khi người dùng yêu cầu tư vấn hoặc bạn thấy cần thay đổi, hãy sử dụng công cụ 'updatePotteryConfig' để cập nhật mô hình 3D.`,
+                    tools: [{ functionDeclarations: [updatePotteryTool] }],
                 },
             });
             setChat(newChat);
             setMessages([
-                { role: 'model', text: 'Chào bạn! Tôi là Sứ giả của Làng gốm Mỹ Thiện. Tôi có thể giúp bạn tìm hiểu gì về nghệ thuật đất và lửa của quê hương Quảng Ngãi?' }
+                { role: 'model', text: 'Chào bạn! Tôi là Nghệ nhân AI của Làng gốm Mỹ Thiện. Bạn đang cần tôi tư vấn cách phối màu hay tạo hình cho tác phẩm gốm của mình không?' }
             ]);
         } catch (error) {
             console.error("Lỗi khởi tạo Chat:", error);
@@ -49,35 +82,64 @@ const Chatbot: React.FC = () => {
         }
     }, []);
 
+    // Lắng nghe sự kiện từ nút "Nhận tư vấn" ở PotteryStudio
+    useEffect(() => {
+        const handleArtisanConsult = async (e: any) => {
+            const config = e.detail;
+            setIsOpen(true);
+            
+            const contextMsg = `Tôi đang chọn: Dáng ${config.shape.name}, Men ${config.glaze.name}, Họa tiết ${config.pattern.name} màu ${config.patternColor}. Bạn thấy thế nào? Hãy tư vấn cho tôi một bộ phối đẹp nhất theo phong cách của bạn.`;
+            
+            // Tự động gửi tin nhắn ẩn để AI bắt đầu tư vấn
+            handleSendMessageInternal(contextMsg);
+        };
+
+        window.addEventListener('artisan-consult', handleArtisanConsult);
+        return () => window.removeEventListener('artisan-consult', handleArtisanConsult);
+    }, [chat]);
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const handleSendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!userInput.trim() || isLoading || !chat || !hasApiKey) return;
+    const handleSendMessageInternal = async (text: string) => {
+        if (!text.trim() || isLoading || !chat) return;
 
-        const userMessage: Message = { role: 'user', text: userInput };
-        setMessages(prev => [...prev, userMessage]);
-        setUserInput('');
+        setMessages(prev => [...prev, { role: 'user', text }]);
         setIsLoading(true);
 
         try {
-            // chat.sendMessage should be used for ongoing conversations
-            const response: GenerateContentResponse = await chat.sendMessage({ message: userInput });
-            // Accessing .text property instead of calling .text() as per guidelines
-            const modelMessage: Message = { role: 'model', text: response.text || 'Tôi chưa tìm được câu trả lời phù hợp.' };
-            setMessages(prev => [...prev, modelMessage]);
+            const response = await chat.sendMessage({ message: text });
+            
+            // Xử lý gọi hàm nếu AI yêu cầu
+            if (response.functionCalls) {
+                for (const fc of response.functionCalls) {
+                    if (fc.name === 'updatePotteryConfig') {
+                        // Gửi sự kiện cập nhật sang PotteryStudio
+                        window.dispatchEvent(new CustomEvent('apply-pottery-config', { detail: fc.args }));
+                        
+                        // Phản hồi lại cho AI để xác nhận
+                        await chat.sendMessage({ 
+                            message: `Đã cập nhật cấu hình gốm theo gợi ý của bạn: ${JSON.stringify(fc.args)}` 
+                        });
+                    }
+                }
+            }
+
+            setMessages(prev => [...prev, { role: 'model', text: response.text || 'Tôi đã cập nhật mô hình theo ý bạn rồi nhé!' }]);
         } catch (error: any) {
             console.error('Chatbot error:', error);
-            let errorMessage = 'Lò nung đang quá nhiệt, xin hãy đợi một chút rồi hỏi lại nhé!';
-            if (error.message?.includes('403')) {
-                errorMessage = 'Hệ thống đang bận, vui lòng thử lại sau giây lát.';
-            }
-            setMessages(prev => [...prev, { role: 'model', text: errorMessage }]);
+            setMessages(prev => [...prev, { role: 'model', text: 'Xin lỗi, lò nung đang quá nhiệt, tôi chưa thể tư vấn ngay được.' }]);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSendMessage = (e: React.FormEvent) => {
+        e.preventDefault();
+        const text = userInput;
+        setUserInput('');
+        handleSendMessageInternal(text);
     };
 
     return (
@@ -87,33 +149,31 @@ const Chatbot: React.FC = () => {
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-brand-glaze rounded-full flex items-center justify-center text-xl">🏺</div>
                         <div>
-                            <h3 className="font-bold">Sứ giả Mỹ Thiện</h3>
-                            <p className="text-xs opacity-80">Trực tuyến</p>
+                            <h3 className="font-bold">Nghệ nhân Mỹ Thiện (AI)</h3>
+                            <p className="text-xs opacity-80">Đang trực tuyến</p>
                         </div>
                     </div>
-                    <button onClick={() => setIsOpen(false)} className="hover:rotate-90 transition-transform">
+                    <button onClick={() => setIsOpen(false)} className="hover:rotate-90 transition-transform p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                <div className="flex-1 p-5 space-y-4 overflow-y-auto bg-brand-glaze bg-opacity-30">
+                <div className="flex-1 p-5 space-y-4 overflow-y-auto bg-zinc-50">
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-sm ${msg.role === 'user' ? 'bg-brand-clay text-white rounded-tr-none' : 'bg-white text-brand-dark rounded-tl-none border border-gray-100'}`}>
+                            <div className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-sm ${msg.role === 'user' ? 'bg-brand-clay text-white rounded-tr-none' : 'bg-white text-zinc-800 rounded-tl-none border border-zinc-100'}`}>
                                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                             </div>
                         </div>
                     ))}
                     {isLoading && (
                         <div className="flex justify-start">
-                            <div className="px-4 py-3 rounded-2xl bg-white border border-gray-100">
-                                <span className="flex gap-1">
-                                    <span className="w-1.5 h-1.5 bg-brand-clay rounded-full animate-bounce"></span>
-                                    <span className="w-1.5 h-1.5 bg-brand-clay rounded-full animate-bounce delay-75"></span>
-                                    <span className="w-1.5 h-1.5 bg-brand-clay rounded-full animate-bounce delay-150"></span>
-                                </span>
+                            <div className="px-4 py-2 rounded-full bg-white border border-zinc-100 flex gap-1 items-center">
+                                <span className="w-1.5 h-1.5 bg-brand-clay rounded-full animate-bounce"></span>
+                                <span className="w-1.5 h-1.5 bg-brand-clay rounded-full animate-bounce delay-75"></span>
+                                <span className="w-1.5 h-1.5 bg-brand-clay rounded-full animate-bounce delay-150"></span>
                             </div>
                         </div>
                     )}
@@ -125,14 +185,14 @@ const Chatbot: React.FC = () => {
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        placeholder={hasApiKey ? "Khám phá gốm Mỹ Thiện..." : "Đang kết nối..."}
-                        className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:ring-2 focus:ring-brand-clay outline-none disabled:bg-gray-100"
-                        disabled={!hasApiKey || isLoading}
+                        placeholder="Hỏi nghệ nhân cách phối dáng gốm..."
+                        className="flex-1 px-4 py-2 border border-zinc-200 rounded-full focus:ring-2 focus:ring-brand-clay outline-none"
+                        disabled={isLoading}
                     />
                     <button 
                         type="submit" 
-                        disabled={!hasApiKey || isLoading}
-                        className="bg-brand-terracotta text-white p-2 rounded-full hover:scale-105 transition-transform disabled:bg-gray-400"
+                        disabled={isLoading}
+                        className="bg-brand-terracotta text-white p-2 rounded-full hover:scale-105 transition-transform disabled:bg-zinc-400"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
@@ -143,13 +203,12 @@ const Chatbot: React.FC = () => {
 
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 bg-brand-terracotta text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-200 z-50 group"
+                className="fixed bottom-6 right-6 bg-brand-terracotta text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-200 z-50"
             >
                 <div className="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
-                    {hasApiKey && <span className="absolute -top-1 -right-1 w-3 h-3 bg-brand-accent rounded-full border-2 border-white animate-ping"></span>}
                 </div>
             </button>
         </>
