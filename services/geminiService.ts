@@ -11,7 +11,7 @@ export async function generatePotteryImage(
     throw new Error("Không tìm thấy API_KEY. Vui lòng cấu hình Environment Variable.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
   const baseInstructions = `
     Style: Traditional My Thien Pottery from Quang Ngai, Vietnam. 
