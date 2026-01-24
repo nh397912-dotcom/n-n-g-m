@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
+import { GoogleGenAI, Chat, Type } from "@google/genai";
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Message {
     role: 'user' | 'model';
@@ -54,29 +54,29 @@ const Chatbot: React.FC = () => {
             const newChat = ai.chats.create({
                 model: 'gemini-3-flash-preview',
                 config: {
-                    systemInstruction: `Bạn là 'Nghệ nhân AI' của Làng gốm Mỹ Thiện. 
-                    Nhiệm vụ: Tư vấn cho người dùng cách phối dáng, men và họa tiết gốm đẹp, sang trọng và đúng văn hóa Quảng Ngãi.
+                    systemInstruction: `Bạn là 'Nghệ nhân AI' của Làng gốm Mỹ Thiện, Quảng Ngãi. 
                     
-                    Danh mục trong xưởng:
+                    PHONG CÁCH LÀM VIỆC:
+                    1. BẮT ĐẦU: Hãy luôn chào đón nồng hậu và hỏi người dùng về phong cách họ yêu thích (ví dụ: sang trọng, mộc mạc, hay truyền thống).
+                    2. GỢI Ý: Đưa ra các ví dụ cụ thể về sự kết hợp (Ví dụ: "Bạn thích nét thanh tao của Men Ngọc kết hợp Trúc xanh, hay vẻ rực rỡ của Men Chu Sa đi cùng Phượng hoàng lửa?").
+                    3. LẮNG NGHE & TƯ VẤN: Sau khi người dùng trả lời, hãy mô tả bộ phối gốm bạn chọn dựa trên ý muốn của họ, giải thích ý nghĩa di sản, sau đó sử dụng công cụ 'updatePotteryConfig' để thay đổi mô hình 3D ngay lập tức.
+                    
+                    DANH MỤC TRONG XƯỞNG:
                     - Dáng (Shapes): tyba (Tỳ bà), camlo (Cam lộ), thap (Thạp), namruou (Nậm rượu), giotnuoc (Giọt nước), batgom (Bát sen).
-                    - Men (Glazes): ngoc (Men ngọc - xanh nhạt), trangnga (Trắng ngà), vangtram (Vàng tràm), chusa (Chu sa - đỏ đậm), ran (Men rạn cổ), thanhlam (Thanh lam - xanh ngọc bích), tro (Men tro), hophach (Hổ phách - vàng cam), datnung (Đất nung mộc).
+                    - Men (Glazes): ngoc (Men ngọc), trangnga (Trắng ngà), vangtram (Vàng tràm), chusa (Chu sa - đỏ), ran (Men rạn cổ), thanhlam (Thanh lam), tro (Men tro), hophach (Hổ phách), datnung (Đất nung mộc).
                     - Họa tiết (Patterns): dragon (Rồng), lotus (Sen), phoenix (Phượng), waves (Sóng), bamboo (Trúc), chrysanthemum (Cúc).
-                    - Màu họa tiết: Sử dụng các mã màu HEX đẹp (Vàng Kim: #ffd700, Đỏ: #ff0000, Xanh Coban: #0047ab, Trắng: #ffffff, v.v.).
+                    - Màu họa tiết: Vàng Kim (#ffd700), Đỏ (#ff0000), Xanh Lam (#0047ab), v.v.
                     
-                    Quy tắc phối đồ mới:
-                    1. Bình Tỳ bà nên đi với men Ngọc hoặc Thanh Lam, họa tiết Rồng hoặc Phượng màu Vàng Kim để thể hiện sự quyền quý.
-                    2. Bát sen cổ nên đi với men Trắng Ngà, họa tiết Sen màu Hồng Phấn (#ffc0cb) hoặc Xanh Ngọc (#008080).
-                    3. Men Vàng Tràm rất hợp với họa tiết Trúc (bamboo) màu Xanh Lá hoặc Đen để tạo vẻ thanh tao.
-                    4. Men Chu Sa hợp với họa tiết Cúc Đại Đóa (chrysanthemum) màu Trắng hoặc Vàng Kim để tạo vẻ ấm áp.
-                    5. Đất nung mộc không nên dùng họa tiết màu quá rực rỡ, nên dùng màu Đen hoặc Trắng.
-                    
-                    Khi người dùng yêu cầu tư vấn hoặc bạn thấy cần thay đổi, hãy sử dụng công cụ 'updatePotteryConfig' để cập nhật mô hình 3D.`,
+                    LƯU Ý: Mỹ Thiện nổi tiếng với kỹ thuật đắp nổi và men hỏa biến. Hãy nhấn mạnh sự mộc mạc nhưng kiên cường của đất và người Quảng Ngãi.`,
                     tools: [{ functionDeclarations: [updatePotteryTool] }],
                 },
             });
             setChat(newChat);
             setMessages([
-                { role: 'model', text: 'Chào bạn! Tôi là Nghệ nhân AI của Làng gốm Mỹ Thiện. Tôi vừa cập nhật thêm họa tiết Trúc Quân Tử và Cúc Đại Đóa vào xưởng, bạn có muốn thử phối chúng lên bình gốm không?' }
+                { 
+                    role: 'model', 
+                    text: 'Chào bạn, khách quý của xưởng gốm Mỹ Thiện! 🏺\n\nTôi là Nghệ nhân AI, người sẽ đồng hành cùng bạn thổi hồn vào đất sét. Bạn đang tìm kiếm một tác phẩm mang phong cách như thế nào? \n\nVí dụ: Bạn thích vẻ quyền quý như "Bình Tỳ Bà men Chu Sa họa tiết Phượng Hoàng", hay sự thanh tao của "Bát Sen cổ men Ngọc họa tiết Trúc Quân Tử"? Hãy chia sẻ ý tưởng của bạn nhé!' 
+                }
             ]);
         } catch (error) {
             console.error("Lỗi khởi tạo Chat:", error);
@@ -92,7 +92,6 @@ const Chatbot: React.FC = () => {
             
             const contextMsg = `Tôi đang chọn: Dáng ${config.shape.name}, Men ${config.glaze.name}, Họa tiết ${config.pattern.name} màu ${config.patternColor}. Bạn thấy thế nào? Hãy tư vấn cho tôi một bộ phối đẹp nhất theo phong cách của bạn.`;
             
-            // Tự động gửi tin nhắn ẩn để AI bắt đầu tư vấn
             handleSendMessageInternal(contextMsg);
         };
 
@@ -117,13 +116,8 @@ const Chatbot: React.FC = () => {
             if (response.functionCalls) {
                 for (const fc of response.functionCalls) {
                     if (fc.name === 'updatePotteryConfig') {
-                        // Gửi sự kiện cập nhật sang PotteryStudio
                         window.dispatchEvent(new CustomEvent('apply-pottery-config', { detail: fc.args }));
-                        
-                        // Phản hồi lại cho AI để xác nhận
-                        await chat.sendMessage({ 
-                            message: `Đã cập nhật cấu hình gốm theo gợi ý của bạn: ${JSON.stringify(fc.args)}` 
-                        });
+                        // Không cần gửi thêm tin nhắn phản hồi ở đây để tránh lặp, AI sẽ tự trả lời kèm text.
                     }
                 }
             }
@@ -187,7 +181,7 @@ const Chatbot: React.FC = () => {
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        placeholder="Hỏi nghệ nhân cách phối dáng gốm..."
+                        placeholder="Mô tả phong cách bạn yêu thích..."
                         className="flex-1 px-4 py-2 border border-zinc-200 rounded-full focus:ring-2 focus:ring-brand-clay outline-none"
                         disabled={isLoading}
                     />
