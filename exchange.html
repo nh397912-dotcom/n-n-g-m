@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sàn Gốm Mỹ Thiện - Trao Đổi Di Sản</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          extend: {
+            colors: {
+              'brand-clay': '#A8763E',
+              'brand-terracotta': '#8B4513',
+              'brand-dark': '#3D352E',
+              'brand-sand': '#E5D3B3',
+              'shopee-orange': '#ee4d2d',
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .bg-pottery-texture {
+        background-color: #fdfaf6;
+        background-image: url("https://www.transparenttextures.com/patterns/p6.png");
+      }
+      .cart-bounce {
+        animation: cartBounce 0.3s ease;
+      }
+      @keyframes cartBounce {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-pottery-texture text-brand-dark font-sans antialiased">
+    <div id="exchange-root"></div>
+    <script type="module" src="exchange.tsx"></script>
+  </body>
+</html>
