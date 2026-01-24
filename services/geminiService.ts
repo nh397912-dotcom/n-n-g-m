@@ -6,13 +6,12 @@ export async function generatePotteryImage(
   referenceImage: { data: string; mimeType: string; } | null,
   isEdit: boolean = false
 ): Promise<string> {
-  const API_KEY = process.env.GEMINI_API_KEY;
-
-  if (!API_KEY) {
+  // Use process.env.API_KEY directly in the constructor as per guidelines
+  if (!process.env.API_KEY) {
     throw new Error("Không tìm thấy API_KEY. Vui lòng cấu hình Environment Variable.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const baseInstructions = `
     Style: Traditional My Thien Pottery from Quang Ngai, Vietnam. 
@@ -55,6 +54,7 @@ export async function generatePotteryImage(
         throw new Error('API không trả về kết quả hợp lệ.');
     }
 
+    // Iterate through parts to find the image data as per guidelines
     for (const part of candidate.content.parts) {
       if (part.inlineData) {
         return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;

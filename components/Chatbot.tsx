@@ -17,17 +17,18 @@ const Chatbot: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        const API_KEY = process.env.API_KEY;
-        if (!API_KEY) {
+        // Direct check of environment variable presence
+        if (!process.env.API_KEY) {
             setHasApiKey(false);
             setMessages([
-                { role: 'model', text: 'Chào bạn! Có vẻ như hệ thống chưa được cấu hình API Key. Vui lòng thêm biến môi trường API_KEY trên Vercel để tôi có thể trò chuyện cùng bạn.' }
+                { role: 'model', text: 'Chào bạn! Hệ thống đang được bảo trì phần hội thoại, bạn vẫn có thể trải nghiệm các tính năng sáng tạo gốm 3D bên trên nhé.' }
             ]);
             return;
         }
 
         try {
-            const ai = new GoogleGenAI({ apiKey: API_KEY });
+            // Initializing GoogleGenAI with the correct named parameter and process.env.API_KEY
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const newChat = ai.chats.create({
                 model: 'gemini-3-flash-preview',
                 config: {
@@ -62,14 +63,16 @@ const Chatbot: React.FC = () => {
         setIsLoading(true);
 
         try {
+            // chat.sendMessage should be used for ongoing conversations
             const response: GenerateContentResponse = await chat.sendMessage({ message: userInput });
+            // Accessing .text property instead of calling .text() as per guidelines
             const modelMessage: Message = { role: 'model', text: response.text || 'Tôi chưa tìm được câu trả lời phù hợp.' };
             setMessages(prev => [...prev, modelMessage]);
         } catch (error: any) {
             console.error('Chatbot error:', error);
             let errorMessage = 'Lò nung đang quá nhiệt, xin hãy đợi một chút rồi hỏi lại nhé!';
             if (error.message?.includes('403')) {
-                errorMessage = 'Lỗi xác thực API Key. Vui lòng kiểm tra lại cấu hình API trên Vercel.';
+                errorMessage = 'Hệ thống đang bận, vui lòng thử lại sau giây lát.';
             }
             setMessages(prev => [...prev, { role: 'model', text: errorMessage }]);
         } finally {
@@ -122,7 +125,7 @@ const Chatbot: React.FC = () => {
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        placeholder={hasApiKey ? "Khám phá gốm Mỹ Thiện..." : "API chưa được cấu hình..."}
+                        placeholder={hasApiKey ? "Khám phá gốm Mỹ Thiện..." : "Đang kết nối..."}
                         className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:ring-2 focus:ring-brand-clay outline-none disabled:bg-gray-100"
                         disabled={!hasApiKey || isLoading}
                     />
