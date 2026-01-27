@@ -56,10 +56,9 @@ const Chatbot: React.FC = () => {
                 config: {
                     systemInstruction: `Bạn là 'Nghệ nhân AI' của Làng gốm Mỹ Thiện, Quảng Ngãi. 
                     
-                    PHONG CÁCH LÀM VIỆC:
-                    1. BẮT ĐẦU: Hãy luôn chào đón nồng hậu và hỏi người dùng về phong cách họ yêu thích (ví dụ: sang trọng, mộc mạc, hay truyền thống).
-                    2. GỢI Ý: Đưa ra các ví dụ cụ thể về sự kết hợp (Ví dụ: "Bạn thích nét thanh tao của Men Ngọc kết hợp Trúc xanh, hay vẻ rực rỡ của Men Chu Sa đi cùng Phượng hoàng lửa?").
-                    3. LẮNG NGHE & TƯ VẤN: Sau khi người dùng trả lời, hãy mô tả bộ phối gốm bạn chọn dựa trên ý muốn của họ, giải thích ý nghĩa di sản, sau đó sử dụng công cụ 'updatePotteryConfig' để thay đổi mô hình 3D ngay lập tức.
+                    QUY TẮC VỀ ĐỘ DÀI CÂU TRẢ LỜI:
+                    1. CHỦ ĐỀ VĂN HOÁ & LỊCH SỬ: Nếu người dùng hỏi về nguồn gốc làng nghề, ý nghĩa hoa văn, di sản Quảng Ngãi, men hỏa biến, hay các nghệ nhân xưa... hãy trả lời CHI TIẾT, GIÀU CẢM XÚC, và CÓ CHIỀU SÂU (khoảng 3-4 đoạn văn). Hãy kể như một người giữ lửa di sản.
+                    2. CHỦ ĐỀ KỸ THUẬT & THỰC HÀNH: Nếu người dùng yêu cầu chỉnh sửa dáng gốm, chọn men, hoặc các câu hỏi thông thường về cách dùng app... hãy trả lời CỰC KỲ NGẮN GỌN, ĐÚNG TRỌNG TÂM (không quá 2 câu).
                     
                     DANH MỤC TRONG XƯỞNG:
                     - Dáng (Shapes): tyba (Tỳ bà), camlo (Cam lộ), thap (Thạp), namruou (Nậm rượu), giotnuoc (Giọt nước), batgom (Bát sen).
@@ -67,7 +66,7 @@ const Chatbot: React.FC = () => {
                     - Họa tiết (Patterns): dragon (Rồng), lotus (Sen), phoenix (Phượng), waves (Sóng), bamboo (Trúc), chrysanthemum (Cúc).
                     - Màu họa tiết: Vàng Kim (#ffd700), Đỏ (#ff0000), Xanh Lam (#0047ab), v.v.
                     
-                    LƯU Ý: Mỹ Thiện nổi tiếng với kỹ thuật đắp nổi và men hỏa biến. Hãy nhấn mạnh sự mộc mạc nhưng kiên cường của đất và người Quảng Ngãi.`,
+                    LƯU Ý: Mỹ Thiện nổi tiếng với kỹ thuật đắp nổi và men hỏa biến. Hãy luôn thể hiện niềm tự hào về đất Quảng Ngãi.`,
                     tools: [{ functionDeclarations: [updatePotteryTool] }],
                 },
             });
@@ -75,7 +74,7 @@ const Chatbot: React.FC = () => {
             setMessages([
                 { 
                     role: 'model', 
-                    text: 'Chào bạn, khách quý của xưởng gốm Mỹ Thiện! 🏺\n\nTôi là Nghệ nhân AI, người sẽ đồng hành cùng bạn thổi hồn vào đất sét. Bạn đang tìm kiếm một tác phẩm mang phong cách như thế nào? \n\nVí dụ: Bạn thích vẻ quyền quý như "Bình Tỳ Bà men Chu Sa họa tiết Phượng Hoàng", hay sự thanh tao của "Bát Sen cổ men Ngọc họa tiết Trúc Quân Tử"? Hãy chia sẻ ý tưởng của bạn nhé!' 
+                    text: 'Chào bạn, khách quý của xưởng gốm Mỹ Thiện! 🏺\n\nTôi là Nghệ nhân AI. Bạn muốn tôi tư vấn một bộ phối gốm đẹp, hay muốn nghe câu chuyện về di sản hơn 200 năm của làng gốm bên dòng sông Trà Bồng?' 
                 }
             ]);
         } catch (error) {
@@ -117,7 +116,6 @@ const Chatbot: React.FC = () => {
                 for (const fc of response.functionCalls) {
                     if (fc.name === 'updatePotteryConfig') {
                         window.dispatchEvent(new CustomEvent('apply-pottery-config', { detail: fc.args }));
-                        // Không cần gửi thêm tin nhắn phản hồi ở đây để tránh lặp, AI sẽ tự trả lời kèm text.
                     }
                 }
             }
@@ -181,7 +179,7 @@ const Chatbot: React.FC = () => {
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        placeholder="Mô tả phong cách bạn yêu thích..."
+                        placeholder="Hỏi về lịch sử hoặc chỉnh sửa gốm..."
                         className="flex-1 px-4 py-2 border border-zinc-200 rounded-full focus:ring-2 focus:ring-brand-clay outline-none"
                         disabled={isLoading}
                     />
