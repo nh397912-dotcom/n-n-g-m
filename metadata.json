@@ -1,5 +1,7 @@
 {
   "name": "Tạo model gốm",
   "description": "Một ứng dụng web giới thiệu về Làng Gốm Mỹ Thiện ở Quảng Ngãi, cho phép người dùng khám phá các sản phẩm truyền thống và trải nghiệm sáng tạo sản phẩm gốm của riêng mình bằng công nghệ AI.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }
