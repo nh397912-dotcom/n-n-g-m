@@ -1,18 +1,80 @@
 
-import React, { useState, useMemo, Suspense, useRef, useEffect } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, ContactShadows, Environment, Center, Html, Float, useTexture } from '@react-three/drei';
+import React, { useState, useMemo, Suspense, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
-// SVGs cho hoa văn di sản
-const PATTERN_ASSETS = {
-  // Cập nhật hoa văn Rồng Thần theo ảnh đính kèm: Thân dài uốn lượn, vảy rồng và bờm rực rỡ
-  dragon: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M433.2 121.6c-4.4-18.7-22-30.8-41.2-28.4-15.6 1.9-28.5 11.7-34.6 25.1-4.2-1.2-8.6-1.9-13.1-1.9-22.1 0-40.4 15.7-44.2 36.5-6.5-1.9-13.3-2.9-20.4-2.9-35.4 0-64.8 25.1-71.1 58.4-1.9-.3-3.8-.4-5.8-.4-24.3 0-44.4 17.6-48.4 40.8-5.3-1-10.7-1.6-16.3-1.6-44.2 0-80 35.8-80 80s35.8 80 80 80c5.6 0 11.1-.6 16.3-1.6 4.1 23.2 24.1 40.8 48.4 40.8 2 0 3.9-.1 5.8-.4 6.3 33.3 35.7 58.4 71.1 58.4 7.1 0 13.9-1 20.4-2.9 3.8 20.8 22.1 36.5 44.2 36.5 4.5 0 8.9-.7 13.1-1.9 6.1 13.4 19 23.2 34.6 25.1 19.2 2.4 36.8-9.7 41.2-28.4 1.1-4.7 1.1-9.5 0-14.2 18.7-4.4 30.8-22 28.4-41.2-1.9-15.6-11.7-28.5-25.1-34.6 1.2-4.2 1.9-8.6 1.9-13.1 0-22.1-15.7-40.4-36.5-44.2 1.9-6.5 2.9-13.3 2.9-20.4 0-35.4-25.1-64.8-58.4-71.1.3-1.9.4-3.8.4-5.8 0-24.3-17.6-44.4-40.8-48.4 1-5.3 1.6-10.7 1.6-16.3 0-44.2-35.8-80-80-80s-80 35.8-80 80c0 5.6.6 11.1 1.6 16.3-23.2 4.1-40.8 24.1-40.8 48.4 0 2 .1 3.9.4 5.8-33.3 6.3-58.4 35.7-58.4 71.1 0 7.1 1 13.9 2.9 20.4-20.8 3.8-36.5 22.1-36.5 44.2 0 4.5.7 8.9 1.9 13.1-13.4 6.1-23.2 19-25.1 34.6-2.4 19.2 9.7 36.8 28.4 41.2 4.7 1.1 9.5 1.1 14.2 0 4.4 18.7 22 30.8 41.2 28.4 15.6-1.9 28.5-11.7 34.6-25.1 4.2 1.2 8.6 1.9 13.1 1.9 22.1 0 40.4-15.7 44.2-36.5 6.5 1.9 13.3 2.9 20.4 2.9 35.4 0 64.8-25.1 71.1-58.4 1.9.3 3.8.4 5.8.4 24.3 0 44.4-17.6 48.4-40.8 5.3 1 10.7 1.6 16.3 1.6 44.2 0 80-35.8 80-80s-35.8-80-80-80c-5.6 0-11.1.6-16.3 1.6-4.1-23.2-24.1-40.8-48.4-40.8-2 0-3.9.1-5.8.4-6.3-33.3-35.7-58.4-71.1-58.4-7.1 0-13.9 1-20.4 2.9-3.8-20.8-22.1-36.5-44.2-36.5-4.5 0-8.9.7-13.1 1.9-6.1-13.4-19-23.2-34.6-25.1-19.2-2.4-36.8 9.7-41.2 28.4-1.1 4.7-1.1 9.5 0 14.2-18.7 4.4-30.8 22-28.4 41.2 1.9 15.6 11.7 28.5 25.1 34.6-1.2 4.2-1.9 8.6-1.9 13.1 0 22.1 15.7 40.4 36.5 44.2-1.9 6.5-2.9 13.3-2.9 20.4 0 35.4 25.1 64.8 58.4 71.1-.3 1.9-.4 3.8-.4 5.8 0 24.3 17.6 44.4 40.8 48.4-1 5.3-1.6 10.7-1.6 16.3 0 44.2 35.8 80 80 80s80-35.8 80-80c0-5.6-.6-11.1-1.6-16.3 23.2-4.1 40.8-24.1 40.8-48.4 0-2-.1-3.9-.4-5.8 33.3-6.3 58.4-35.7 58.4-71.1 0-7.1-1-13.9-2.9-20.4 20.8-3.8 36.5-22.1 36.5-44.2 0-4.5-.7-8.9-1.9-13.1 13.4-6.1 23.2-19 25.1-34.6 2.4-19.2-9.7-36.8-28.4-41.2-4.7-1.1-9.5-1.1-14.2 0z" fill="{{COLOR}}"/><path d="M256 120c-50-80 50-100 0-110s-100 50-80 150 80 80 80 150-60 100-80 150 50 110 80 110 80-50 80-110-60-100-80-150 80-80 80-150-60-100-80-150z" fill="{{COLOR}}" opacity="0.6"/><path d="M300 200c40-20 60-60 40-100s-60-40-100-20-60 60-40 100 60 40 100 20zM212 312c-40 20-60 60-40 100s60 40 100 20 60-60 40-100-60-40-100-20z" fill="{{COLOR}}" opacity="0.4"/></svg>`,
-  lotus: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M256 100c-20 0-40 40-40 80s20 80 40 80 40-40 40-80-20-80-40-80zM180 140c-15 0-30 45-30 90s15 90 30 90 30-45 30-90-15-90-30-90zM332 140c15 0 30 45 30 90s-15 90-30 90-30-45-30-90 15-90 30-90zM120 220c-10 0-20 50-20 100s10 100 20 100 20-50 20-100-10-100-20-100zM392 220c10 0 20 50 20 100s-10 100-20 100-20-50-20-100 10-100 20-100z" fill="{{COLOR}}"/></svg>`,
-  phoenix: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M256 50c-20 80-80 100-80 150s40 100 80 100 80-50 80-100-60-70-80-150z" fill="{{COLOR}}"/><path d="M100 256c50 0 80-30 100-80s-20-100-50-100-100 80-50 180zM412 256c-50 0-80-30-100-80s20-100 50-100 100 80 50 180z" fill="{{COLOR}}" opacity="0.8"/></svg>`,
-  waves: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M0 256c50-50 100-50 150 0s100 50 150 0 100-50 150 0v256H0V256zM0 156c50-50 100-50 150 0s100 50 150 0 100-50 150 0v100H0V156z" fill="{{COLOR}}" opacity="0.6"/></svg>`,
-  bamboo: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M100 512V0h20v512h-20zm150 0V0h20v512h-20zm150 0V0h20v512h-20z" fill="{{COLOR}}" opacity="0.2"/><path d="M100 400l80-40-20-10-60 50zm150-150l80-40-20-10-60 50zm150-100l80-40-20-10-60 50z" fill="{{COLOR}}"/></svg>`,
-  chrysanthemum: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><circle cx="256" cy="256" r="40" fill="{{COLOR}}"/><path d="M256 100c10 50 40 50 50 0s-40-50-50 0zm0 312c10-50 40-50 50 0s-40 50-50 0zM100 256c50 10 50 40 0 50s-50-40 0-50zm312 0c-50 10-50 40 0 50s50-40 0-50z" fill="{{COLOR}}" opacity="0.8"/></svg>`
+// SVGs cho hoa văn di sản - Được tối ưu hóa thiết kế theo yêu cầu
+const PATTERN_TEMPLATES = {
+  // Rồng Thần: Thân rồng uốn lượn chữ S mềm mại theo phong cách gốm cổ Việt Nam
+  dragon: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <defs>
+      <pattern id="dragonTexture" x="0" y="0" width="128" height="128" patternUnits="userSpaceOnUse">
+        <!-- Vảy rồng hình cánh cung xếp lớp -->
+        <path d="M20 10 Q 32 0 44 10 M10 25 Q 22 15 34 25 M30 40 Q 42 30 54 40" fill="none" stroke="{{COLOR}}" stroke-width="1.5" opacity="0.4" />
+        <!-- Mây ngũ sắc cách điệu -->
+        <path d="M80 80 C 70 70 90 60 100 70 S 110 90 100 100 S 80 110 70 95" fill="none" stroke="{{COLOR}}" stroke-width="1" opacity="0.3" />
+      </pattern>
+    </defs>
+    <rect width="512" height="512" fill="url(#dragonTexture)" />
+    <!-- Thân rồng uốn lượn hình chữ S tinh xảo -->
+    <path d="M256 512 C 100 450 100 350 256 300 S 412 150 256 50" fill="none" stroke="{{COLOR}}" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
+    <path d="M256 512 C 100 450 100 350 256 300 S 412 150 256 50" fill="none" stroke="white" stroke-width="4" stroke-dasharray="10 20" opacity="0.3" />
+    <!-- Đầu rồng và bờm -->
+    <circle cx="256" cy="50" r="15" fill="{{COLOR}}" />
+    <path d="M256 50 L 230 20 M256 50 L 282 20 M256 50 L 300 50" stroke="{{COLOR}}" stroke-width="5" stroke-linecap="round" />
+    <!-- Chân rồng (Móng vuốt) -->
+    <path d="M180 420 L 150 440 M330 200 L 360 180" stroke="{{COLOR}}" stroke-width="8" stroke-linecap="round" opacity="0.6" />
+  </svg>`,
+  
+  // Liên Hoa: Hoa sen cách điệu tinh xảo
+  lotus: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <g transform="translate(256, 256)">
+      <path d="M0 -180 C 40 -120 40 -60 0 0 C -40 -60 -40 -120 0 -180" fill="{{COLOR}}" />
+      <path d="M0 -180 C 40 -120 40 -60 0 0 C -40 -60 -40 -120 0 -180" fill="{{COLOR}}" transform="rotate(60)" opacity="0.8" />
+      <path d="M0 -180 C 40 -120 40 -60 0 0 C -40 -60 -40 -120 0 -180" fill="{{COLOR}}" transform="rotate(-60)" opacity="0.8" />
+      <path d="M0 -180 C 40 -120 40 -60 0 0 C -40 -60 -40 -120 0 -180" fill="{{COLOR}}" transform="rotate(120)" opacity="0.6" />
+      <path d="M0 -180 C 40 -120 40 -60 0 0 C -40 -60 -40 -120 0 -180" fill="{{COLOR}}" transform="rotate(-120)" opacity="0.6" />
+      <circle r="25" fill="{{COLOR}}" />
+    </g>
+  </svg>`,
+
+  // Phượng Hoàng: Thanh thoát, đuôi dài lộng lẫy
+  phoenix: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <path d="M256 50 Q 300 10 350 50 Q 400 150 256 300 Q 150 400 256 512" fill="none" stroke="{{COLOR}}" stroke-width="10" stroke-linecap="round" />
+    <circle cx="256" cy="50" r="12" fill="{{COLOR}}" />
+    <path d="M256 300 C 100 350 50 450 100 512" fill="none" stroke="{{COLOR}}" stroke-width="5" opacity="0.7" />
+    <path d="M256 300 C 412 350 462 450 412 512" fill="none" stroke="{{COLOR}}" stroke-width="5" opacity="0.7" />
+    <path d="M256 50 L 276 30 M256 50 L 276 70" stroke="{{COLOR}}" stroke-width="3" />
+  </svg>`,
+  
+  // Sóng Nước: Đường nét gập ghềnh nhấp nhô hình học
+  waves: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <path d="M0 100 L 40 40 L 80 100 L 120 40 L 160 100 L 200 40 L 240 100 L 280 40 L 320 100 L 360 40 L 400 100 L 440 40 L 512 100" fill="none" stroke="{{COLOR}}" stroke-width="14" stroke-linejoin="miter" />
+    <path d="M0 200 L 40 140 L 80 200 L 120 140 L 160 200 L 200 140 L 240 200 L 280 140 L 320 200 L 360 140 L 400 200 L 440 140 L 512 200" fill="none" stroke="{{COLOR}}" stroke-width="10" stroke-linejoin="miter" opacity="0.7" />
+    <path d="M0 300 L 40 240 L 80 300 L 120 240 L 160 300 L 200 240 L 240 300 L 280 240 L 320 300 L 360 240 L 400 300 L 440 240 L 512 300" fill="none" stroke="{{COLOR}}" stroke-width="6" stroke-linejoin="miter" opacity="0.4" />
+  </svg>`,
+
+  // Trúc Quân Tử
+  bamboo: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <path d="M120 512V0h15v512h-15zM256 512V0h15v512h-15zM392 512V0h15v512h-15z" fill="{{COLOR}}" opacity="0.3"/>
+    <path d="M120 400l60-30-15-10-45 40zM256 250l60-30-15-10-45 40zM392 100l60-30-15-10-45 40z" fill="{{COLOR}}"/>
+  </svg>`,
+  
+  // Cúc Đại Đóa
+  chrysanthemum: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <circle cx="256" cy="256" r="35" fill="{{COLOR}}"/>
+    <g opacity="0.8">
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(0 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(45 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(90 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(135 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(180 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(225 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(270 256 256)"/>
+      <path d="M256 140c6-40 25-40 31 0s-25 40-31 0z" fill="{{COLOR}}" transform="rotate(315 256 256)"/>
+    </g>
+  </svg>`
 };
 
 const SHAPES = [
@@ -36,14 +98,15 @@ const GLAZES = [
   { id: 'datnung', name: 'Đất Nung Mộc', color: '#a8763e', emissive: '#2a1808', roughness: 0.7, metalness: 0.0, clearcoat: 0.0 }
 ];
 
+// Đảo vị trí: Cúc Đại Đóa lên thứ 2, Rồng Thần xuống cuối cùng
 const PATTERNS = [
-  { id: 'none', name: 'Mộc (Trơn)', icon: '◌', textureBase: null, defaultColor: '#000000' },
-  { id: 'dragon', name: 'Rồng Thần', icon: '🐉', textureBase: PATTERN_ASSETS.dragon, defaultColor: '#ff0000' },
-  { id: 'lotus', name: 'Liên Hoa', icon: '🪷', textureBase: PATTERN_ASSETS.lotus, defaultColor: '#ec4899' },
-  { id: 'phoenix', name: 'Phượng Hoàng', icon: '🕊️', textureBase: PATTERN_ASSETS.phoenix, defaultColor: '#f59e0b' },
-  { id: 'waves', name: 'Sóng Nước', icon: '🌊', textureBase: PATTERN_ASSETS.waves, defaultColor: '#3b82f6' },
-  { id: 'bamboo', name: 'Trúc Quân Tử', icon: '🎋', textureBase: PATTERN_ASSETS.bamboo, defaultColor: '#166534' },
-  { id: 'chrysanthemum', name: 'Cúc Đại Đóa', icon: '🌼', textureBase: PATTERN_ASSETS.chrysanthemum, defaultColor: '#ca8a04' }
+  { id: 'none', name: 'Mộc (Trơn)', icon: '◌', template: null, defaultColor: '#000000' },
+  { id: 'chrysanthemum', name: 'Cúc Đại Đóa', icon: '🌼', template: PATTERN_TEMPLATES.chrysanthemum, defaultColor: '#ca8a04' },
+  { id: 'lotus', name: 'Liên Hoa', icon: '🪷', template: PATTERN_TEMPLATES.lotus, defaultColor: '#ec4899' },
+  { id: 'phoenix', name: 'Phượng Hoàng', icon: '🕊️', template: PATTERN_TEMPLATES.phoenix, defaultColor: '#f59e0b' },
+  { id: 'waves', name: 'Sóng Nước', icon: '🌊', template: PATTERN_TEMPLATES.waves, defaultColor: '#3b82f6' },
+  { id: 'bamboo', name: 'Trúc Quân Tử', icon: '🎋', template: PATTERN_TEMPLATES.bamboo, defaultColor: '#166534' },
+  { id: 'dragon', name: 'Rồng Thần', icon: '🐉', template: PATTERN_TEMPLATES.dragon, defaultColor: '#ff0000' }
 ];
 
 const PATTERN_COLORS = [
@@ -58,7 +121,6 @@ const PATTERN_COLORS = [
 
 const EMPTY_TEXTURE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-// Bàn tay 3D theo dõi khi kéo
 const ArtisanHand3D = ({ active, position }: { active: boolean, position: THREE.Vector3 }) => {
   const meshRef = useRef<THREE.Group>(null);
   
@@ -81,7 +143,6 @@ const ArtisanHand3D = ({ active, position }: { active: boolean, position: THREE.
   );
 };
 
-// Component Mũi tên kéo thả trên Model
 const DragHandle = ({ 
   position, 
   direction, 
@@ -118,7 +179,6 @@ const DragHandle = ({
     const current = direction === 'y' ? e.clientY : e.clientX;
     const delta = (pointerStart.current - current) / (direction === 'y' ? size.height : size.width) * (direction === 'y' ? viewport.height : viewport.width);
     
-    // Tính toán vị trí 3D hiện tại của con trỏ để bàn tay đuổi theo
     worldPos.current.set(
         (e.clientX / size.width) * 2 - 1,
         -(e.clientY / size.height) * 2 + 1,
@@ -178,19 +238,29 @@ const PotteryModel = ({
   const [handPos, setHandPos] = useState(new THREE.Vector3());
 
   const patternTextureUrl = useMemo(() => {
-    if (!pattern.textureBase) return EMPTY_TEXTURE;
-    const encodedColor = patternColor.replace('#', '%23');
-    return pattern.textureBase.replace(/{{COLOR}}/g, encodedColor);
+    if (!pattern.template) return EMPTY_TEXTURE;
+    const svgContent = pattern.template.replace(/{{COLOR}}/g, patternColor);
+    try {
+      // Mã hóa Base64 để trình duyệt tải texture an toàn
+      const base64Svg = btoa(unescape(encodeURIComponent(svgContent)));
+      return `data:image/svg+xml;base64,${base64Svg}`;
+    } catch (e) {
+      console.error("Lỗi mã hóa hoa văn SVG:", e);
+      return EMPTY_TEXTURE;
+    }
   }, [pattern, patternColor]);
 
   const patternTexture = useTexture(patternTextureUrl) as THREE.Texture;
   
-  useMemo(() => {
+  useEffect(() => {
     if (patternTexture && pattern.id !== 'none') {
       patternTexture.wrapS = patternTexture.wrapT = THREE.RepeatWrapping;
-      // Tinh chỉnh độ lặp để rồng trông dài và uốn lượn hơn trên thân bình
-      patternTexture.repeat.set(2, 1);
+      // Tối ưu độ lặp để hoa văn phủ kín đẹp mắt
+      const repeatX = pattern.id === 'dragon' ? 1.5 : 3;
+      const repeatY = pattern.id === 'dragon' ? 1 : 2;
+      patternTexture.repeat.set(repeatX, repeatY);
       patternTexture.anisotropy = 16;
+      patternTexture.needsUpdate = true;
     }
   }, [patternTexture, pattern.id]);
 
@@ -247,7 +317,6 @@ const PotteryModel = ({
         </mesh>
       )}
 
-      {/* Các điểm nặn tương tác trực tiếp */}
       <DragHandle 
         position={[0, topY + 1.5, 0]} 
         direction="y" 
@@ -436,7 +505,6 @@ const PotteryStudio: React.FC = () => {
       <div className="lg:w-1/3 flex flex-col gap-6">
         <div className="bg-white rounded-[3rem] p-10 shadow-2xl border border-zinc-100 flex flex-col gap-8 h-full overflow-y-auto custom-scrollbar">
           
-          {/* Section 01: Hình Dáng & Nặn Gốm */}
           <div className="space-y-4">
             <div className="flex flex-col gap-5 border-b border-zinc-100 pb-8">
               <h3 className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">01. Hình Dáng</h3>
@@ -465,20 +533,6 @@ const PotteryStudio: React.FC = () => {
                   </button>
                 </div>
               )}
-              
-              {isMoldingMode && (
-                <div className="space-y-3 bg-orange-50 p-5 rounded-3xl border border-orange-100 animate-fade-in shadow-inner">
-                  <p className="text-[11px] text-orange-800 font-black text-center italic uppercase tracking-tighter">
-                    🌟 Chạm & Kéo bàn tay trên bình để tạo dáng
-                  </p>
-                  <button 
-                    onClick={() => setMoldingFactors({ height: 1.0, neck: 1.0, body: 1.0, base: 1.0 })}
-                    className="w-full py-2 text-[9px] font-black uppercase text-orange-400 hover:text-orange-600 underline"
-                  >
-                    Đặt lại kích thước mặc định
-                  </button>
-                </div>
-              )}
             </div>
 
             {!isMoldingMode && (
@@ -492,7 +546,6 @@ const PotteryStudio: React.FC = () => {
             )}
           </div>
 
-          {/* Men Gốm */}
           <div className="space-y-4">
             <div className="flex justify-between items-end border-b border-zinc-100 pb-3">
               <h3 className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">02. Màu Men</h3>
@@ -505,7 +558,6 @@ const PotteryStudio: React.FC = () => {
             </div>
           </div>
 
-          {/* Họa Tiết */}
           <div className="space-y-4">
             <div className="flex justify-between items-end border-b border-zinc-100 pb-3">
               <h3 className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">03. Họa Tiết</h3>
@@ -521,7 +573,6 @@ const PotteryStudio: React.FC = () => {
             </div>
           </div>
 
-          {/* Màu Họa Tiết */}
           {selectedPattern.id !== 'none' && (
             <div className="space-y-4 animate-fade-in">
               <div className="flex justify-between items-end border-b border-zinc-100 pb-3">
@@ -536,7 +587,6 @@ const PotteryStudio: React.FC = () => {
             </div>
           )}
 
-          {/* Điều khiển cuối */}
           <div className="mt-auto flex flex-col gap-3 pt-6 border-t border-zinc-100">
             <button 
                 onClick={handleRandomize} 
